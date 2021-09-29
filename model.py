@@ -5,7 +5,41 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
-# Replace this with your code!
+class User(db.Model):
+
+    __tablename__ = 'users'
+
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.String(50), nullable=False, unique=True)
+    password = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f"<User ID={user_id}, email={email}>"
+
+    
+class Rating(db.Model):
+    
+    __tablename__ = 'ratings'
+    
+    rating_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, nullable=False, unique=True)
+    rating = db.Column(db.Integer, nullable=False)
+    movie_id = db.Column(db.Integer, nullable=False, unique=True)
+
+    def __repr__(self):
+        return f'<Rating rating_id={rating_id} user_id={user_id}>'
+    
+
+class Movie(db.Model):
+
+    __tablename__ = 'movies'
+
+    movie_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(50), nullable=False, unique=True)
+    rating = db.Column(db.Integer, nullable=True)
+
+    def __repr__(self):
+        return f'<Movie title={title} average rating={rating}>'
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///ratings", echo=True):
