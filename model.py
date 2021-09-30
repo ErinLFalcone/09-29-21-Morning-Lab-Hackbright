@@ -13,8 +13,10 @@ class User(db.Model):
     email = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(50), nullable=False)
 
+    # ratings = a list of Rating objects
+
     def __repr__(self):
-        return f"<User ID={user_id}, email={email}>"
+        return f"<User user_id={self.user_id}, email={self.email}>"
 
     
 class Rating(db.Model):
@@ -22,12 +24,15 @@ class Rating(db.Model):
     __tablename__ = 'ratings'
     
     rating_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, nullable=False, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))  # foreign key, rleated to users table  
     rating = db.Column(db.Integer, nullable=False)
-    movie_id = db.Column(db.Integer, nullable=False, unique=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey("movies.movie_id"))   # foreign key, rleated to movies table
+
+    movie = db.relationship("Movie", backref="ratings")
+    user = db.relationship("User", backref="ratings")
 
     def __repr__(self):
-        return f'<Rating rating_id={rating_id} user_id={user_id}>'
+        return f'<Rating rating_id={self.rating_id} user_id={self.user_id}>'
     
 
 class Movie(db.Model):
@@ -35,11 +40,15 @@ class Movie(db.Model):
     __tablename__ = 'movies'
 
     movie_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(50), nullable=False, unique=True)
-    rating = db.Column(db.Integer, nullable=True)
+    title = db.Column(db.String)
+    overview = db.Column(db.Text)
+    release_date = db.Column(db.DateTime)
+    poster_path = db.Column(db.String)
+
+    # ratings = a list of Rating objects
 
     def __repr__(self):
-        return f'<Movie title={title} average rating={rating}>'
+        return f'<Movie movie_id={self.movie_id} title={self.title}>'
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///ratings", echo=True):
@@ -51,6 +60,12 @@ def connect_to_db(flask_app, db_uri="postgresql:///ratings", echo=True):
     db.init_app(flask_app)
 
     print("Connected to the db!")
+
+
+def test_part_1():
+    all_ratings = Rating.query.all()  # returns a list of Rating objects
+    for rat in all_ratings:
+        print(f"movie title = {rat.movie.title}, user email = {rat.user.email}")
 
 
 if __name__ == "__main__":
