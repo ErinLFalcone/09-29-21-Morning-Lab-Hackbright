@@ -68,6 +68,17 @@ def test_part_1():
         print(f"movie title = {rat.movie.title}, user email = {rat.user.email}")
 
 
+def test_part_2():
+   first_rating = Rating.query.first() # the first row in the ratings table
+
+    # Rating.user_id: in our query, we want user_id to be:
+    # first_user_rating_list = Rating.query.filter(Rating.user_id == first_rating.user_id)
+
+    # Better way
+    for user_rating in first_rating.user.ratings:
+        print(user_rating.rating)
+
+
 if __name__ == "__main__":
     from server import app
 
